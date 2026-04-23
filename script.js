@@ -552,7 +552,7 @@ document.addEventListener('keydown', e => {
     }
 
     if (e.code === 'KeyP' && state === 'playing') pauseGame();
-    if (e.code === 'KeyP' && state === 'paused') resumeGame();
+    else if (e.code === 'KeyP' && state === 'paused') resumeGame();
 });
 
 canvas.addEventListener('click', () => {
