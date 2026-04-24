@@ -534,15 +534,11 @@ function loop(ts) {
 }
 
 function handleFlap() {
-    if (state === 'playing') {
-        flap();
+    if (state !== 'playing') {
         return;
     }
 
-    if (state === 'title' || state === 'gameover') {
-        startGame();
-        return;
-    }
+    flap();
 }
 
 document.addEventListener('keydown', e => {
