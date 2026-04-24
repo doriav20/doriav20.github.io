@@ -27,7 +27,11 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 function resize() {
-    const s = Math.min(window.innerWidth / CW, window.innerHeight / CH, 1.7);
+    const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+    const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+    const s = Math.min(vw / CW, vh / CH, 1.7);
+
     canvas.width = CW;
     canvas.height = CH;
     canvas.style.width = CW * s + 'px';
@@ -36,6 +40,9 @@ function resize() {
 
 resize();
 window.addEventListener('resize', resize);
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', resize);
+}
 
 function loadImages() {
     return new Promise(resolve => {
@@ -544,27 +551,29 @@ function handleFlap() {
 document.addEventListener('keydown', e => {
     if (e.code === 'Space' || e.code === 'ArrowUp') {
         e.preventDefault();
+        ensureAudio();
         handleFlap();
     }
-
-    if (e.code === 'KeyP' && state === 'playing') pauseGame();
-    else if (e.code === 'KeyP' && state === 'paused') resumeGame();
+    else if (e.code === 'Escape') {
+        e.preventDefault();
+        if (state === 'playing') pauseGame();
+        else if (state === 'paused') resumeGame();
+    }
 });
 
-canvas.addEventListener('click', () => {
+canvas.addEventListener('pointerdown', e => {
+    e.preventDefault();
     ensureAudio();
     handleFlap();
 });
 
-canvas.addEventListener(
-    'touchstart',
-    e => {
-        e.preventDefault();
-        ensureAudio();
-        handleFlap();
-    },
-    {passive: false}
-);
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden && state === 'playing') {
+        pauseGame();
+    }
+});
 
 document.getElementById('btn-start').addEventListener('click', () => {
     ensureAudio();
